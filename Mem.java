@@ -55,7 +55,7 @@
  import java.util.*;
  import java.lang.reflect.*;
  import javax.swing.*;
-import javax.swing.text.DefaultEditorKit.InsertBreakAction;
+ import javax.swing.text.DefaultEditorKit.InsertBreakAction;
 
  /* ===== CLASS BLOCK ===== */
  public final class Mem
@@ -129,7 +129,7 @@ import javax.swing.text.DefaultEditorKit.InsertBreakAction;
 
             /* first, register class to diversity Map */
             /* search for collision, if none, add class */
-            int typeIndex = 0;
+            int typeIndex = -1;
             for (int i = 0; i < DIVERSITY; i++)
             {
                 /* on collide */
@@ -150,6 +150,13 @@ import javax.swing.text.DefaultEditorKit.InsertBreakAction;
                     break;
                 }
             } /* BUFFER SEARCH LOOP END */
+
+            /* on div create fail, exit */
+            if (typeIndex == -1)
+            {
+                pageLog("Div creation failed!\n");
+                return null;
+            }
 
             /* variable for storing free data index for object to alloc */
             int allocIndex = 0;

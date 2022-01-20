@@ -142,14 +142,12 @@ public class App
     /* MAIN */
     public static void main(String[] args)
     {
-        String s = new String();
+        Mem.debug_log = true;
+        String s = (String)Mem.alloc(String.class);
 
-        for (int i = 0; i < 300; i++)
+        for (int i = 0; i < 50; i++)
         {
             Vect b = (Vect)Mem.alloc(Vect.class);
-            Mem.debug_log = true;
-            Mem.free(b);
-            Mem.debug_log = false;
         }
         Mem.pageSpec();
         
