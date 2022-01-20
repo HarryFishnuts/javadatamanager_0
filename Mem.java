@@ -41,6 +41,8 @@
  *  - Alloc function
  *  - Free function
  *  - Dump function
+ *  - Pagedump function
+ *  - Cachedump function
  */
 
  /* ===== IMPORTS ===== */
@@ -261,6 +263,8 @@
                         buffer_hashdata[i] = objHash;
                         buffer_ageField[i] = 0;
                         buffer_indexMap[i] = index;
+                        pageLog("Empty cache spot at: %d\n",
+                            i);
                         return;
                     }
 
@@ -273,6 +277,7 @@
                 } /* GET OLDEST LOOP END */
 
                 /* assign oldest index to new data */
+                pageLog("Replaced oldest cache: %d\n", oldestIndex);
                 buffer_hashdata[oldestIndex] = objHash;
                 buffer_ageField[oldestIndex] = 0;
                 buffer_indexMap[oldestIndex] = index;
@@ -289,7 +294,7 @@
                     /* on match, free hash and return page index */
                     if (hashCode == buffer_hashdata[i])
                     {
-                        buffer_ageField[i] = CACHEEMPTY;
+                        buffer_hashdata[i] = CACHEEMPTY;
                         return buffer_indexMap[i];
                     }
                 }
@@ -435,6 +440,29 @@
             buffer_pages[i].bufferDump();
         }
     }
+
+    /* ===== PAGEDUMP FUNCTION ===== */
+    public static void pageDump(int page)
+    {
+        if (buffer_pages[page] == null)
+        {
+            System.err.printf("Could not dump page: Page does not exist!\n");
+            return;
+        }
+        buffer_pages[page].cacheDump();
+        buffer_pages[page].bufferDump();
+    } /* PAGEDUMP FUNCTION END */
+
+    /* ===== CACHEDUMP FUNCTION ===== */
+    public static void cacheDump(int page)
+    {
+        if (buffer_pages[page] == null)
+        {
+            System.err.printf("Could not dump page: Page does not exist!\n");
+            return;
+        }
+        buffer_pages[page].cacheDump();
+    } /* CACHEDUMP FUNCTION END */
  } /* END CLASS BLOCK */
 
 

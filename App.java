@@ -138,14 +138,12 @@ public class App
     {
         Mem.debug_log = true;
         Vect a;
-        for (int i = 0; i < 400; i++)
+        for (int i = 0; i < 200; i++)
         {
-            System.out.printf(">>>%d\n", i);
             a = (Vect)Mem.alloc(Vect.class);
             a.x = 5;
             Mem.free(a);
         }
-        //Mem.dump();
     }
 } /* CLASS END */
 
