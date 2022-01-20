@@ -1,4 +1,9 @@
 import java.lang.reflect.Constructor;
+
+import javax.swing.event.ChangeEvent;
+
+import java.lang.*;
+
 public class App
 {
     static final int SECTSIZE = 0x20;
@@ -136,14 +141,21 @@ public class App
     /* MAIN */
     public static void main(String[] args)
     {
-        Mem.debug_log = true;
-        Vect a;
-        for (int i = 0; i < 200; i++)
+        //Mem.debug_log = true;
+        String s = new String();
+        Vect a = (Vect)Mem.alloc(Vect.class);
+        for (int i = 0; i < 20000; i++)
         {
-            a = (Vect)Mem.alloc(Vect.class);
-            a.x = 5;
-            Mem.free(a);
+            Vect b = (Vect)Mem.alloc(Vect.class);
         }
+
+        long t1 = System.nanoTime();
+        Mem.free(s);
+        long t2 = System.nanoTime();
+
+        System.out.printf("<%020d> nanosecond free time\n", t2 - t1);
+        //Mem.dump();
+        
     }
 } /* CLASS END */
 
