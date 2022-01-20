@@ -150,15 +150,7 @@ public class App
             Mem.free(b);
             Mem.debug_log = false;
         }
-        System.exit(0);
-        int status = Mem.free(s);
-        long t1 = System.currentTimeMillis();
-        s = (String)Mem.alloc(String.class);
-        long t2 = System.currentTimeMillis();
-
-        System.out.printf("<%05d> mili alloc time\n", t2 - t1);
-        System.out.printf("Free status: %d\n", status);
-        //Mem.dump();
+        Mem.pageSpec();
         
     }
 } /* CLASS END */

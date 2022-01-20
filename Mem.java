@@ -42,9 +42,11 @@
  *  - Cache members
  *  - Cache allocate function
  *  - Alloc function
+ *  - Page clean function
  *  - Free function
  *  - Dump function
  *  - Pagedump function
+ *  - Pagespec function
  *  - Cachedump function (L2)
  *  - Cachedump function (L1)
  */
@@ -380,6 +382,17 @@ import javax.swing.text.DefaultEditorKit.InsertBreakAction;
             buffer_divField[index] |= UNUSED;
             pageLog("Forcefreed object at index: %d\n", index);
             info_bufferuse--;
+
+            /* search for cache collision and free */
+            for (int i = 0; i < L2CACHESIZE; i++)
+            {
+                /* on matching, free */
+                if (cache.buffer_hashdata[i] ==
+                    buffer_data[index].hashCode())
+                {
+                    cache.buffer_hashdata[i] = CACHEEMPTY;
+                } /* CACHE HIT END */
+            } /* UPDATE CACHE END */
             return 1;
         }
 
@@ -514,13 +527,11 @@ import javax.swing.text.DefaultEditorKit.InsertBreakAction;
         return null;
     } /* ALLOC FUNCTION END */
 
-    /* ===== FREE FUNCTION ===== */
-    /* returns 1 on sucess, 0 on failure */
+    /* ===== PAGE CLEAN FUNCTION ===== */
     private static long pageClean = 0;
-    public static int free(Object toFree)
+    public static void pageClean()
     {
         pageClean++;
-        pageLog("FREE CALLED\n");
 
         /* check all pages, if any pages are empty, remove them */
         /* only clean pages every so many intervals */
@@ -542,12 +553,20 @@ import javax.swing.text.DefaultEditorKit.InsertBreakAction;
             pageLog("Pages cleaned: %d\n", cleanCount);
             if (cleanCount > 0) 
             {
-                long t1 = System.nanoTime();
+                long t1 = System.currentTimeMillis();
                 System.gc();
-                long t2 = System.nanoTime();
-                pageLog("GC Time: %d nanosecond\n", t2 - t1);
+                long t2 = System.currentTimeMillis();
+                pageLog("GC Time: %d miliseconds\n", t2 - t1);
             }
-        } /* PAGECLEAN END */
+        } /* PAGECLEAN CHECK END */
+    } /* PAGECLEAN FUNCTION END */
+
+    /* ===== FREE FUNCTION ===== */
+    /* returns 1 on sucess, 0 on failure */
+    
+    public static int free(Object toFree)
+    {
+        pageLog("FREE CALLED\n");
 
         /* first, check L1 cache */
         pageLog("Checking L1 cache\n");
@@ -569,6 +588,7 @@ import javax.swing.text.DefaultEditorKit.InsertBreakAction;
                 if (status == 1)
                 {
                     pageLog("Object hit at L1, freed sucess!\n");
+                    pageClean();
                     return 1;
                 }
                 else
@@ -613,6 +633,7 @@ import javax.swing.text.DefaultEditorKit.InsertBreakAction;
             {
                 pageLog("Freed Object Sucessfully!\n");
                 pageLog("L2 Cachefaults: %d\n", faults);
+                pageClean();
                 return 1;
             } 
             faults++;
@@ -648,6 +669,20 @@ import javax.swing.text.DefaultEditorKit.InsertBreakAction;
         buffer_pages[page].bufferDump();
     } /* PAGEDUMP FUNCTION END */
 
+    /* ===== PAGESPEC FUNCTION ===== */
+    public static void pageSpec()
+    {
+        System.out.printf("PAGE SPECIFICATIONS:\n");
+        for (int i = 0; i < info_pageCount; i++)
+        {
+            System.out.printf("\tPage[%d]\n", i);
+            System.out.printf("\t\tBufferuse: %03d\n",
+                buffer_pages[i].info_bufferuse);
+            System.out.printf("\t\tDiversity: %03d\n",
+                buffer_pages[i].info_diversity);
+        }
+    }
+
     /* ===== CACHEDUMP FUNCTION (L2) ===== */
     public static void cacheDumpL2(int page)
     {
@@ -673,5 +708,4 @@ import javax.swing.text.DefaultEditorKit.InsertBreakAction;
             System.out.printf("\tUseage: %d\n", cache_usemap[i]);
         }
     } /* CACHEDUMP L1 FUNCTION END */
-
  } /* END CLASS BLOCK */
