@@ -78,6 +78,7 @@ import javax.swing.text.DefaultEditorKit.InsertBreakAction;
     private static final int L2CACHESIZE = 0x20;
     private static final int CACHEEMPTY = -1;
     private static final int PAGECOUNT = 0x100;
+    private static final int PAGECLEANINTERVAL = 0x10;
 
     /* ===== PAGE CLASS ===== */
     private static class Page
@@ -488,11 +489,25 @@ import javax.swing.text.DefaultEditorKit.InsertBreakAction;
             }
             
             /* if page is full, continue */
-            if (buffer_pages[i].info_bufferuse == PAGESIZE) continue;
+            if (buffer_pages[i].info_bufferuse == PAGESIZE)
+            {
+                pageLog("Skipping page %d: page is full\n", i);
+                continue;
+            } 
 
-            /* allocate from page */
-            return buffer_pages[i].alloc(type, i);
-        }
+            /* try allocate from page */
+            Object temp =  buffer_pages[i].alloc(type, i);
+
+            /* on alloc fail, */
+            if (temp == null)
+            {
+                pageLog("Alloc failed at page: %d\n", i);
+                pageLog("Trying next page...\n");
+                continue;
+            }
+            /* else, return object */
+            return temp;
+        } /* PAGE SEARCH END */
 
         /* on exit, failure */
         System.err.printf("OUT OF PAGES!\n");
@@ -501,9 +516,38 @@ import javax.swing.text.DefaultEditorKit.InsertBreakAction;
 
     /* ===== FREE FUNCTION ===== */
     /* returns 1 on sucess, 0 on failure */
+    private static long pageClean = 0;
     public static int free(Object toFree)
     {
+        pageClean++;
         pageLog("FREE CALLED\n");
+
+        /* check all pages, if any pages are empty, remove them */
+        /* only clean pages every so many intervals */
+        if (pageClean % PAGECLEANINTERVAL == 0)
+        {
+            pageLog("CLEANING PAGES!\n");
+            int cleanCount = 0;
+            for (int i = 0; i < info_pageCount; i++)
+            {
+                if (buffer_pages[i].info_bufferuse == 0)
+                {
+                    buffer_pages[i] = null;
+                    info_pageCount--;
+                    cleanCount++;
+                } /* EMPTY CHECK END */
+            } /* PAGEBUFFER LOOP END */
+
+            /* if pages were cleaned, call GC */
+            pageLog("Pages cleaned: %d\n", cleanCount);
+            if (cleanCount > 0) 
+            {
+                long t1 = System.nanoTime();
+                System.gc();
+                long t2 = System.nanoTime();
+                pageLog("GC Time: %d nanosecond\n", t2 - t1);
+            }
+        } /* PAGECLEAN END */
 
         /* first, check L1 cache */
         pageLog("Checking L1 cache\n");

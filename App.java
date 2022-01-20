@@ -141,19 +141,23 @@ public class App
     /* MAIN */
     public static void main(String[] args)
     {
-        //Mem.debug_log = true;
         String s = new String();
-        Vect a = (Vect)Mem.alloc(Vect.class);
-        for (int i = 0; i < 20000; i++)
+
+        for (int i = 0; i < 300; i++)
         {
             Vect b = (Vect)Mem.alloc(Vect.class);
+            Mem.debug_log = true;
+            Mem.free(b);
+            Mem.debug_log = false;
         }
+        System.exit(0);
+        int status = Mem.free(s);
+        long t1 = System.currentTimeMillis();
+        s = (String)Mem.alloc(String.class);
+        long t2 = System.currentTimeMillis();
 
-        long t1 = System.nanoTime();
-        Mem.free(s);
-        long t2 = System.nanoTime();
-
-        System.out.printf("<%020d> nanosecond free time\n", t2 - t1);
+        System.out.printf("<%05d> mili alloc time\n", t2 - t1);
+        System.out.printf("Free status: %d\n", status);
         //Mem.dump();
         
     }
