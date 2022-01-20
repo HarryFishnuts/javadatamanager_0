@@ -257,6 +257,8 @@ import javax.swing.text.DefaultEditorKit.InsertBreakAction;
             /* ===== CACHE ALLOCATE FUNCTION ===== */
             public void alloc(Object obj, int index)
             {
+                pageLog("L2 CACHEALLOC CALLED\n");
+
                 /* increment cache age */
                 info_cacheAge++;
 
@@ -282,7 +284,7 @@ import javax.swing.text.DefaultEditorKit.InsertBreakAction;
                         buffer_hashdata[i] = objHash;
                         buffer_ageField[i] = 0;
                         buffer_indexMap[i] = index;
-                        pageLog("Empty cache spot at: %d\n",
+                        pageLog("Empty L2 cache spot at: %d\n",
                             i);
                         return;
                     }
@@ -296,7 +298,7 @@ import javax.swing.text.DefaultEditorKit.InsertBreakAction;
                 } /* GET OLDEST LOOP END */
 
                 /* assign oldest index to new data */
-                pageLog("Replaced oldest cache: %d\n", oldestIndex);
+                pageLog("Replaced oldest L2 cache: %d\n", oldestIndex);
                 buffer_hashdata[oldestIndex] = objHash;
                 buffer_ageField[oldestIndex] = 0;
                 buffer_indexMap[oldestIndex] = index;
@@ -394,6 +396,7 @@ import javax.swing.text.DefaultEditorKit.InsertBreakAction;
                 } /* CACHE HIT END */
             } /* UPDATE CACHE END */
             return 1;
+            
         }
 
         /* ===== PAGE CACHE DUMP FUNCTION ===== */
