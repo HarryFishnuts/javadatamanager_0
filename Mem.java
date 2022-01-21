@@ -55,7 +55,6 @@
  import java.util.*;
  import java.lang.reflect.*;
  import javax.swing.*;
- import javax.swing.text.DefaultEditorKit.InsertBreakAction;
 
  /* ===== CLASS BLOCK ===== */
  public final class Mem
@@ -74,7 +73,7 @@
 
     /* ===== CLASS MACROS ===== */
     private static final int PAGESIZE = 0x200;
-    private static final int DIVERSITY = 0x1f;
+    private static final int DIVERSITY = 0x20;
     private static final int UNUSED = 0b01000000; /* one off from sign */
     private static final int L1CACHESIZE = 0x10;
     private static final int L2CACHESIZE = 0x20;

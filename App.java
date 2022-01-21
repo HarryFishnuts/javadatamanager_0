@@ -1,10 +1,5 @@
 import java.lang.reflect.Constructor;
 
-import javax.swing.event.ChangeEvent;
-
-import java.util.Scanner;
-import java.lang.*;
-
 public class App
 {
     static final int SECTSIZE = 0x20;
@@ -142,15 +137,15 @@ public class App
     /* MAIN */
     public static void main(String[] args)
     {
-        Mem.debug_log = true;
         String s = (String)Mem.alloc(String.class);
+        Object obj = Mem.alloc(String.class);
+        
+        System.out.printf("o type: %s\n", obj.getClass().getCanonicalName());
 
         for (int i = 0; i < 50; i++)
         {
             Vect b = (Vect)Mem.alloc(Vect.class);
         }
-        Mem.pageSpec();
-        
+        Mem.dump();
     }
 } /* CLASS END */
-
