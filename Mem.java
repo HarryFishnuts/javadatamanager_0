@@ -515,7 +515,7 @@
             {
                 pageLog("Skipping page %d: page is full\n", i);
                 continue;
-            } 
+            }
 
             /* try allocate from page */
             Object temp =  buffer_pages[i].alloc(type, i);
